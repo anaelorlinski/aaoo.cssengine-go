@@ -127,9 +127,17 @@ type Float Fl
 
 type Int int
 
+// Limits is the value of hyphenate-limit-chars: the fewest characters of a
+// word that may be hyphenated, and the fewest before and after a break. A
+// field is [LimitAuto] where the value is auto.
 type Limits struct {
 	Total, Left, Right int
 }
+
+// LimitAuto is the field of a [Limits] for the keyword auto: the choice is
+// left to the user agent, which may know better for the language. CSS Text 4
+// suggests 5 for the word and 2 on each side of a break otherwise.
+const LimitAuto = -1
 
 type FontFeature struct {
 	Tag   [4]byte

@@ -4126,58 +4126,29 @@ func hyphenateLimitZone(tokens []Token, _ string) pr.CssProperty {
 }
 
 // @validator(unstable=true)
-// Validation for “hyphenate-limit-chars“.
+// Validation for “hyphenate-limit-chars“: [ auto | <integer> ]{1,3}, for the
+// word, before a break and after it. A missing third value is the second
+// one; a missing second value is auto. auto is kept as [pr.LimitAuto], for
+// the hyphenation to choose with the language.
 func hyphenateLimitChars(tokens []Token, _ string) pr.CssProperty {
-	switch len(tokens) {
-	case 1:
-		token := tokens[0]
-		keyword := getKeyword(token)
-		if keyword == "auto" {
-			return pr.Limits{Total: 5, Left: 2, Right: 2}
-		} else if number, ok := token.(pa.Number); ok && number.IsInt() {
-			return pr.Limits{Total: number.Int(), Left: 2, Right: 2}
-		}
-	case 2:
-		total, left := tokens[0], tokens[1]
-		totalKeyword := getKeyword(total)
-		leftKeyword := getKeyword(left)
-		if totalNumber, ok := total.(pa.Number); ok && totalNumber.IsInt() {
-			if leftNumber, ok := left.(pa.Number); ok && leftNumber.IsInt() {
-				return pr.Limits{Total: totalNumber.Int(), Left: leftNumber.Int(), Right: leftNumber.Int()}
-			} else if leftKeyword == "auto" {
-				return pr.Limits{Total: totalNumber.Int(), Left: 2, Right: 2}
-			}
-		} else if totalKeyword == "auto" {
-			if leftNumber, ok := left.(pa.Number); ok && leftNumber.IsInt() {
-				return pr.Limits{Total: 5, Left: leftNumber.Int(), Right: leftNumber.Int()}
-			} else if leftKeyword == "auto" {
-				return pr.Limits{Total: 5, Left: 2, Right: 2}
-			}
-		}
-	case 3:
-		total, left, right := tokens[0], tokens[1], tokens[2]
-		totalNumber, okT := total.(pa.Number)
-		leftNumber, okL := left.(pa.Number)
-		rightNumber, okR := right.(pa.Number)
-		if ((okT && totalNumber.IsInt()) || getKeyword(total) == "auto") &&
-			((okL && leftNumber.IsInt()) || getKeyword(left) == "auto") &&
-			((okR && rightNumber.IsInt()) || getKeyword(right) == "auto") {
-			totalInt := 5
-			if okT {
-				totalInt = totalNumber.Int()
-			}
-			leftInt := 2
-			if okL {
-				leftInt = leftNumber.Int()
-			}
-			rightInt := 2
-			if okR {
-				rightInt = rightNumber.Int()
-			}
-			return pr.Limits{Total: totalInt, Left: leftInt, Right: rightInt}
-		}
+	if len(tokens) < 1 || len(tokens) > 3 {
+		return nil
 	}
-	return nil
+	values := [3]int{pr.LimitAuto, pr.LimitAuto, pr.LimitAuto}
+	for i, token := range tokens {
+		if getKeyword(token) == "auto" {
+			continue
+		}
+		number, ok := token.(pa.Number)
+		if !ok || !number.IsInt() || number.Int() < 0 {
+			return nil
+		}
+		values[i] = number.Int()
+	}
+	if len(tokens) == 2 {
+		values[2] = values[1]
+	}
+	return pr.Limits{Total: values[0], Left: values[1], Right: values[2]}
 }
 
 // @validator(proprietary=true)

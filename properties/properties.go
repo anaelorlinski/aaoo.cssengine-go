@@ -167,7 +167,7 @@ var initialValues = Properties{
 
 	// Text 3/4 (WD/WD): https://www.w3.org/TR/css-text-4/
 	PHyphenateCharacter:  String("‐"), // computed value chosen by the user agent
-	PHyphenateLimitChars: Limits{5, 2, 2},
+	PHyphenateLimitChars: Limits{LimitAuto, LimitAuto, LimitAuto},
 	PHyphenateLimitZone:  ZeroPixels.Tagged(),
 	PHyphens:             String("manual"),
 	PLetterSpacing:       TagToV(Normal),
