@@ -1,0 +1,30 @@
+aaoo.cssengine-go
+Copyright (c) 2026, Anael Orlinski
+
+This module includes software and data from the following projects. Their
+copyright notices and licenses are in the files listed.
+
+- webrender, Go port of WeasyPrint (BSD 3-Clause)
+  Copyright (c) 2019, Benoit KUGLER
+  LICENSE, stylesheet/LICENSE
+
+- tinycss2 (BSD 3-Clause): parser/
+  Copyright (c) 2013-2020, Simon Sapin and contributors
+  parser/LICENSE
+
+- WeasyPrint (BSD 3-Clause): properties/, validation/, counters/
+  Copyright (c) 2011-2021, Simon Sapin and contributors
+  properties/LICENSE, validation/LICENSE, counters/LICENSE
+
+- cascadia (BSD 2-Clause): selector/
+  Copyright (c) 2011 Andy Balholm
+  selector/LICENSE
+
+- CSS Color Module Level 4, sample code (W3C Software and Document License)
+  Copyright (c) 2026 World Wide Web Consortium
+  color/NOTICE
+
+- Test data, not compiled into programs:
+  - css-parsing-tests (CC0): parser/css-parsing-tests/LICENSE
+  - cssselect2 selector fixtures (BSD 3-Clause, Copyright (c) 2012-2018,
+    Simon Sapin and contributors): selector/test_resources/LICENSE

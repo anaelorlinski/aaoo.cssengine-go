@@ -1,0 +1,472 @@
+package properties
+
+import (
+	"github.com/anaelorlinski/aaoo.cssengine-go/parser"
+)
+
+// initialValues stores the default values for the CSS properties (see
+// [InitialValue]).
+var initialValues = Properties{
+	// CSS 2.1: https://www.w3.org/TR/CSS21/propidx.html
+	PBottom: TaggedDim{Tag: Auto},
+	PLeft:   TaggedDim{Tag: Auto},
+	PRight:  TaggedDim{Tag: Auto},
+	PTop:    TaggedDim{Tag: Auto},
+
+	PCaptionSide: String("top"),
+	PClear:       String("none"),
+	PClip:        Values{},                                // computed value for "auto"
+	PColor:       Color(parser.ParseColorString("black")), // chosen by the user agent
+
+	PDirection:  Ltr,
+	PDisplay:    Display{Outside: Inline, Inside: Flow},
+	PEmptyCells: String("show"),
+	PFloat:      String("none"),
+	PLineHeight: TagToV(Normal),
+
+	PMarginTop:    ZeroPixels.Tagged(), // 0px
+	PMarginRight:  ZeroPixels.Tagged(), // 0px
+	PMarginBottom: ZeroPixels.Tagged(), // 0px
+	PMarginLeft:   ZeroPixels.Tagged(), // 0px
+
+	PPaddingTop:    ZeroPixels.Tagged(), // 0px
+	PPaddingRight:  ZeroPixels.Tagged(), // 0px
+	PPaddingBottom: ZeroPixels.Tagged(), // 0px
+	PPaddingLeft:   ZeroPixels.Tagged(), // 0px
+	PPosition:      BoolString{String: "static"},
+	PTableLayout:   String("auto"),
+	PUnicodeBidi:   String("normal"),
+	PVerticalAlign: TagToV(Baseline),
+	PVisibility:    String("visible"),
+	PZIndex:        IntString{String: "auto"},
+
+	// Backgrounds and Borders 3 (CR): https://www.w3.org/TR/css-backgrounds-3/
+	PBackgroundAttachment: Strings{"scroll"},
+	PBackgroundClip:       Strings{"border-box"},
+	PBackgroundColor:      Color(parser.ParseColorString("transparent")),
+	PBackgroundImage:      Images{NoneImage{}},
+	PBackgroundOrigin:     Strings{"padding-box"},
+	PBackgroundPosition: Centers{
+		{OriginX: Left, OriginY: Top, Pos: Point{Dimension{Unit: Perc}, Dimension{Unit: Perc}}},
+	},
+	PBackgroundRepeat:  Repeats{{"repeat", "repeat"}},
+	PBackgroundSize:    Sizes{Size{Width: TaggedDim{Tag: Auto}, Height: TaggedDim{Tag: Auto}}},
+	PBorderBottomColor: CurrentColor,
+	PBorderLeftColor:   CurrentColor,
+	PBorderRightColor:  CurrentColor,
+	PBorderTopColor:    CurrentColor,
+	PBorderBottomStyle: String("none"),
+	PBorderLeftStyle:   String("none"),
+	PBorderRightStyle:  String("none"),
+	PBorderTopStyle:    String("none"),
+	PBorderCollapse:    String("separate"),
+	PBorderSpacing:     Point{Dimension{Unit: Scalar}, Dimension{Unit: Scalar}},
+	PBorderBottomWidth: FToV(3),
+	PBorderLeftWidth:   FToV(3),
+	PBorderTopWidth:    FToV(3), // computed value for "medium"
+	PBorderRightWidth:  FToV(3),
+
+	PBorderImageSource: NoneImage{},
+	PBorderImageSlice: Values{
+		PercToV(100), PercToV(100), PercToV(100), PercToV(100),
+		TaggedDim{},
+	},
+	PBorderImageWidth: Values{FToV(1), FToV(1), FToV(1), FToV(1)},
+	PBorderImageOutset: Values{
+		FToV(0), FToV(0),
+		FToV(0), FToV(0),
+	},
+	PBorderImageRepeat: Strings{"stretch", "stretch"},
+
+	PMaskBorderSource: NoneImage{},
+	PMaskBorderSlice: Values{
+		PercToV(100), PercToV(100), PercToV(100), PercToV(100),
+		TaggedDim{},
+	},
+	PMaskBorderWidth: Values{TaggedDim{Tag: Auto}, TaggedDim{Tag: Auto}, TaggedDim{Tag: Auto}, TaggedDim{Tag: Auto}},
+	PMaskBorderOutset: Values{
+		FToV(0), FToV(0),
+		FToV(0), FToV(0),
+	},
+	PMaskBorderRepeat: Strings{"stretch", "stretch"},
+	PMaskBorderMode:   String("alpha"),
+
+	PBorderBottomLeftRadius:  Point{ZeroPixels, ZeroPixels},
+	PBorderBottomRightRadius: Point{ZeroPixels, ZeroPixels},
+	PBorderTopLeftRadius:     Point{ZeroPixels, ZeroPixels},
+	PBorderTopRightRadius:    Point{ZeroPixels, ZeroPixels},
+
+	// Color 3 (REC): https://www.w3.org/TR/css-color-3/
+	POpacity: Float(1),
+
+	// Multi-column Layout (WD): https://www.w3.org/TR/css-multicol-1/
+	PColumnWidth:     TaggedDim{Tag: Auto},
+	PColumnCount:     IntString{String: "auto"},
+	PColumnRuleColor: CurrentColor,
+	PColumnRuleStyle: String("none"),
+	PColumnRuleWidth: TagToV(Medium),
+	PColumnFill:      String("balance"),
+	PColumnSpan:      String("none"),
+
+	// Fonts 3 (REC): https://www.w3.org/TR/css-fonts-3/
+	PFontFamily:            Strings{"serif"}, // depends on user agent
+	PFontFeatureSettings:   FontFeatures{},
+	PFontKerning:           String("auto"),
+	PFontLanguageOverride:  String("normal"),
+	PFontSize:              FToV(16), // actually medium, but we define medium from this
+	PFontStretch:           String("normal"),
+	PFontStyle:             String("normal"),
+	PFontVariant:           String("normal"),
+	PFontVariantAlternates: String("normal"),
+	PFontVariantCaps:       String("normal"),
+	PFontVariantEastAsian:  SStrings{String: "normal"},
+	PFontVariantLigatures:  SStrings{String: "normal"},
+	PFontVariantNumeric:    SStrings{String: "normal"},
+	PFontVariantPosition:   String("normal"),
+	PFontWeight:            IntString{Int: 400},
+
+	// Fonts 4 (WD): https://www.w3.org/TR/css-fonts-4/
+	PFontVariationSettings: SFloatStrings{String: "normal"},
+
+	// Fragmentation 3/4 (CR/WD): https://www.w3.org/TR/css-break-4/
+	PBoxDecorationBreak: String("slice"),
+	PBreakAfter:         String("auto"),
+	PBreakBefore:        String("auto"),
+	PBreakInside:        String("auto"),
+	PMarginBreak:        String("auto"),
+	POrphans:            Int(2),
+	PWidows:             Int(2),
+
+	// Generated Content 3 (WD): https://www.w3.org/TR/css-content-3/
+	PBookmarkLabel:   ContentProperties{{Type: "content", Content: String("text")}},
+	PBookmarkLevel:   TaggedInt{Tag: None},
+	PBookmarkState:   String("open"),
+	PContent:         SContent{String: "normal"},
+	PFootnoteDisplay: String("block"),
+	PFootnotePolicy:  String("auto"),
+	PQuotes:          Quotes{Tag: Auto}, // chosen by the user agent
+	PStringSet:       StringSet{String: "none"},
+
+	// Images 3/4 (CR/WD): https://www.w3.org/TR/css-images-4/
+	PImageResolution:  FToV(1), // dppx
+	PImageRendering:   String("auto"),
+	PImageOrientation: SBoolFloat{String: "from-image"},
+	PObjectFit:        String("fill"),
+	PObjectPosition: CenterPos{OriginX: Left, OriginY: Top, Pos: Point{
+		Dimension{Value: 50, Unit: Perc}, Dimension{Value: 50, Unit: Perc},
+	}},
+
+	// Paged Media 3 (WD): https://www.w3.org/TR/css-page-3/
+	PSize:        a4.ToPixels(),
+	PPage:        Page("auto"),
+	PBleedLeft:   TaggedDim{Tag: Auto},
+	PBleedRight:  TaggedDim{Tag: Auto},
+	PBleedTop:    TaggedDim{Tag: Auto},
+	PBleedBottom: TaggedDim{Tag: Auto},
+	PMarks:       Marks{}, // computed value for 'none'
+
+	// Text 3/4 (WD/WD): https://www.w3.org/TR/css-text-4/
+	PHyphenateCharacter:  String("‐"), // computed value chosen by the user agent
+	PHyphenateLimitChars: Limits{5, 2, 2},
+	PHyphenateLimitZone:  ZeroPixels.Tagged(),
+	PHyphens:             String("manual"),
+	PLetterSpacing:       TagToV(Normal),
+	PTabSize:             Dimension{Value: 8}.Tagged(),
+	PTextAlignAll:        String("start"),
+	PTextAlignLast:       String("auto"),
+	PTextIndent:          ZeroPixels.Tagged(),
+	PTextTransform:       String("none"),
+	PWhiteSpace:          Normal,
+	PWordBreak:           String("normal"),
+	PWordSpacing:         TaggedDim{}, // computed value for "normal"
+
+	// Transforms 1 (CR): https://www.w3.org/TR/css-transforms-1/
+	PTransformOrigin: Point{{Value: 50, Unit: Perc}, {Value: 50, Unit: Perc}},
+	PTransform:       Transforms{}, // computed value for "none"
+
+	// User Interface 3/4 (REC/WD): https://www.w3.org/TR/css-ui-4/
+	PAppearance:   String("none"),
+	POutlineColor: CurrentColor, // invert is not supported
+	POutlineStyle: String("none"),
+	POutlineWidth: TaggedDim{Dimension: Dimension{Value: 3}}, // computed value for "medium"
+
+	// Sizing 3 (WD): https://www.w3.org/TR/css-sizing-3/
+	PBoxSizing: String("content-box"),
+	PHeight:    TagToV(Auto),
+	PWidth:     TagToV(Auto),
+	PMaxHeight: Dimension{Value: Inf, Unit: Px}.Tagged(), // parsed value for "none}"
+	PMaxWidth:  Dimension{Value: Inf, Unit: Px}.Tagged(),
+	PMinHeight: TaggedDim{Tag: Auto},
+	PMinWidth:  TaggedDim{Tag: Auto},
+
+	// Flexible Box Layout Module 1 (CR): https://www.w3.org/TR/css-flexbox-1/
+	PFlexBasis:     TaggedDim{Tag: Auto},
+	PFlexDirection: String("row"),
+	PFlexGrow:      Float(0),
+	PFlexShrink:    Float(1),
+	PFlexWrap:      String("nowrap"),
+
+	// Grid Layout Module Level 2 (CR): https://www.w3.org/TR/css-grid-2/
+	PGridAutoFlow:        Strings{"row"},
+	PGridAutoColumns:     GridAuto{NewGridDimsValue(TaggedDim{Tag: Auto})},
+	PGridAutoRows:        GridAuto{NewGridDimsValue(TaggedDim{Tag: Auto})},
+	PGridTemplateAreas:   GridTemplateAreas{},
+	PGridTemplateColumns: GridTemplate{Tag: None},
+	PGridTemplateRows:    GridTemplate{Tag: None},
+	PGridRowStart:        GridLine{Tag: Auto},
+	PGridColumnStart:     GridLine{Tag: Auto},
+	PGridRowEnd:          GridLine{Tag: Auto},
+	PGridColumnEnd:       GridLine{Tag: Auto},
+
+	// CSS Box Alignment Module Level 3 (WD): https://www.w3.org/TR/css-align-3/
+	PAlignContent:   JustifyOrAlign{Normal},
+	PAlignItems:     JustifyOrAlign{Normal},
+	PAlignSelf:      JustifyOrAlign{Auto},
+	PJustifyContent: JustifyOrAlign{Normal},
+	PJustifyItems:   JustifyOrAlign{Normal},
+	PJustifySelf:    JustifyOrAlign{Auto},
+	POrder:          Int(0),
+	PColumnGap:      TagToV(Normal),
+	PRowGap:         TagToV(Normal),
+
+	// Text Decoration Module 3/4 (CR/WD): https://www.w3.org/TR/css-text-decor-4/
+	PTextDecorationLine:      Decorations(0),
+	PTextDecorationColor:     CurrentColor,
+	PTextDecorationStyle:     String("solid"),
+	PTextDecorationThickness: TaggedDim{Tag: Auto},
+	PTextUnderlineOffset:     TaggedDim{Tag: Auto},
+
+	// Overflow Module 3 (WD): https://www.w3.org/TR/css-overflow-3/
+	PBlockEllipsis: TaggedString{Tag: None},
+	PContinue:      String("auto"),
+	PMaxLines:      TaggedInt{Tag: None},
+	POverflow:      String("visible"),
+	POverflowWrap:  String("normal"),
+	PTextOverflow:  String("clip"),
+
+	// Lists Module 3 (WD): https://drafts.csswg.org/css-lists-3/
+	// Means "none", but allow `display: list-item` to increment the
+	// list-item counter. If we ever have a way for authors to query
+	// computed values (JavaScript?), this value should serialize to "none".
+	PCounterIncrement:  SIntStrings{K: Auto},
+	PCounterReset:      SIntStrings{Values: IntStrings{}}, // parsed value for "none"
+	PCounterSet:        SIntStrings{Values: IntStrings{}}, // parsed value for "none"
+	PListStyleImage:    Image(NoneImage{}),
+	PListStylePosition: String("outside"),
+	PListStyleType:     CounterStyleID{Name: "disc"},
+
+	// Proprietary
+	PAnchor: String(""),     // computed value of "none"
+	PLink:   TaggedString{}, // computed value of "none"
+	PLang:   TaggedString{}, // computed value of "none"
+
+	// Shadows: CSS Backgrounds 3 / Text Decoration 3
+	PBoxShadow:  Shadows{},
+	PTextShadow: Shadows{},
+}
+
+// IsTextDecoration reports whether pr is one of the text-decoration-*
+// longhands, which are not inherited but propagated to descendants
+// (css-text-decor-3 §2, and WeasyPrint's css/__init__.py).
+func (pr KnownProp) IsTextDecoration() bool {
+	return PTextDecorationLine <= pr && pr <= PTextDecorationThickness
+}
+
+// Shorthand is a compact representation of CSS keywords
+// used as shorthand for several properties
+type Shorthand uint8
+
+const (
+	_ Shorthand = iota
+	SBorderColor
+	SBorderStyle
+	SBorderWidth
+	SBorderImage
+	SMargin
+	SPadding
+	SBleed
+	SBorderRadius
+	SPageBreakAfter
+	SPageBreakBefore
+	SPageBreakInside
+	SBackground
+	SWordWrap
+	SListStyle
+	SBorder
+	SBorderTop
+	SBorderRight
+	SBorderBottom
+	SBorderLeft
+	SColumnRule
+	SOutline
+	SColumns
+	SFontVariant
+	SFont
+	STextDecoration
+	SFlex
+	SFlexFlow
+	SLineClamp
+	STextAlign
+	SGridColumn
+	SGridRow
+	SGridArea
+	SGridTemplate
+	SGrid
+	SGap
+)
+
+// NewShorthand return the tag for 's' or 0 if not supported
+func NewShorthand(s string) Shorthand {
+	switch s {
+	case "border-color":
+		return SBorderColor
+	case "border-style":
+		return SBorderStyle
+	case "border-width":
+		return SBorderWidth
+	case "border-image":
+		return SBorderImage
+	case "margin":
+		return SMargin
+	case "padding":
+		return SPadding
+	case "bleed":
+		return SBleed
+	case "border-radius":
+		return SBorderRadius
+	case "page-break-after":
+		return SPageBreakAfter
+	case "page-break-before":
+		return SPageBreakBefore
+	case "page-break-inside":
+		return SPageBreakInside
+	case "background":
+		return SBackground
+	case "word-wrap":
+		return SWordWrap
+	case "list-style":
+		return SListStyle
+	case "border":
+		return SBorder
+	case "border-top":
+		return SBorderTop
+	case "border-right":
+		return SBorderRight
+	case "border-bottom":
+		return SBorderBottom
+	case "border-left":
+		return SBorderLeft
+	case "column-rule":
+		return SColumnRule
+	case "outline":
+		return SOutline
+	case "columns":
+		return SColumns
+	case "font-variant":
+		return SFontVariant
+	case "font":
+		return SFont
+	case "text-decoration":
+		return STextDecoration
+	case "flex":
+		return SFlex
+	case "flex-flow":
+		return SFlexFlow
+	case "line-clamp":
+		return SLineClamp
+	case "text-align":
+		return STextAlign
+	case "grid-column":
+		return SGridColumn
+	case "grid-row":
+		return SGridRow
+	case "grid-area":
+		return SGridArea
+	case "grid-template":
+		return SGridTemplate
+	case "grid":
+		return SGrid
+	case "gap":
+		return SGap
+	default:
+		return 0
+	}
+}
+
+// String returns the CSS keyword.
+func (sh Shorthand) String() string {
+	switch sh {
+	case SBorderColor:
+		return "border-color"
+	case SBorderStyle:
+		return "border-style"
+	case SBorderWidth:
+		return "border-width"
+	case SBorderImage:
+		return "border-image"
+	case SMargin:
+		return "margin"
+	case SPadding:
+		return "padding"
+	case SBleed:
+		return "bleed"
+	case SBorderRadius:
+		return "border-radius"
+	case SPageBreakAfter:
+		return "page-break-after"
+	case SPageBreakBefore:
+		return "page-break-before"
+	case SPageBreakInside:
+		return "page-break-inside"
+	case SBackground:
+		return "background"
+	case SWordWrap:
+		return "word-wrap"
+	case SListStyle:
+		return "list-style"
+	case SBorder:
+		return "border"
+	case SBorderTop:
+		return "border-top"
+	case SBorderRight:
+		return "border-right"
+	case SBorderBottom:
+		return "border-bottom"
+	case SBorderLeft:
+		return "border-left"
+	case SColumnRule:
+		return "column-rule"
+	case SOutline:
+		return "outline"
+	case SColumns:
+		return "columns"
+	case SFontVariant:
+		return "font-variant"
+	case SFont:
+		return "font"
+	case STextDecoration:
+		return "text-decoration"
+	case SFlex:
+		return "flex"
+	case SFlexFlow:
+		return "flex-flow"
+	case SLineClamp:
+		return "line-clamp"
+	case STextAlign:
+		return "text-align"
+	case SGridColumn:
+		return "grid-column"
+	case SGridRow:
+		return "grid-row"
+	case SGridArea:
+		return "grid-area"
+	case SGridTemplate:
+		return "grid-template"
+	case SGrid:
+		return "grid"
+	case SGap:
+		return "gap"
+	default:
+		return ""
+	}
+}
