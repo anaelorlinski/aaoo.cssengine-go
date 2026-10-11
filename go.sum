@@ -1,2 +1,4 @@
+github.com/anaelorlinski/aaoo.gfxcore-go v0.0.0-20261011145603-e41df5f97039 h1:QARh/qkXQFyFqdMhDPFRBk5Hp2Un+5rTXpYWRjFOaKk=
+github.com/anaelorlinski/aaoo.gfxcore-go v0.0.0-20261011145603-e41df5f97039/go.mod h1:47CA+2xWSNhA1mxHfO3WWl4jUTvBEEOxpzRnX0xEUPQ=
 golang.org/x/net v0.58.0 h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=
 golang.org/x/net v0.58.0/go.mod h1:YwCddHnFlT7eLQqVprV19OnhLGtc5xOKgE0RyqgfWAU=
